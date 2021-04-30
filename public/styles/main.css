@@ -111,3 +111,12 @@ a {
 .flex {
   display: flex;
 }
+.footer{
+  color:gray;
+  bottom:0;
+  position:absolute;
+  height:30px;
+  background-color:lightgray;
+  width:100%;
+  text-align:center;
+}
