@@ -1,19 +1,14 @@
 import {Request,Response} from "express";
-let profile ={
-    nome : "Leonardo",
-    avatar: "https://github.com/LeoMoreiraS.png",
-    "monthly-budget":3000,
-    "days-per-week":6,
-    "hours-per-day":5,
-    "vacation-per-year":1,
-    "value-hour": 20
+import {Profile} from "../model/Profile"
 
-}
+
 class ProfileController{
     index(req:Request, res:Response){
-        return res.render("pages/profile",{profile});
+
+        return res.render("pages/profile",{"profile":Profile.data});
     }
     update(req:Request, res:Response){
+        let profile = Profile.data;
         const data = req.body;
         //media semanas mes com ferias
         const weeksPerMonth = (52- data["vacation-per-year"])/12
@@ -23,14 +18,13 @@ class ProfileController{
         const monthlyTotalHours = weekTotalHours * weeksPerMonth;
 
         data["value-hour"] = data["monthly-budget"] / monthlyTotalHours;
-
-        profile = {
+        Profile.update({
             ...profile,
             ...data,
-        }
+        })
         res.redirect("/profile")
     }
 }
 
 
-export{profile , ProfileController }
+export{ ProfileController }

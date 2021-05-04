@@ -33,7 +33,11 @@
           <img id="logo" src="./images/logo.svg" alt="Logo" />
           <span id="notification">
             <img src="./images/alert-octagon.svg" alt="Alerta" />
-            Você tem 2 horas livres no seu dia
+            <% if (freeHours>=0) { %>
+              Você tem <%= freeHours %> horas livres no seu dia.
+            <% } else { %>
+              Você não tem horas livres no seu dia.
+            <% } %> 
           </span>
           <a href="profile" id="avatar-profile">
             <p><%= profile.nome %> <span>Ver perfil</span></p>
@@ -50,15 +54,15 @@
 
           <div class="info">
             <div class="total">
-              <strong>12</strong>
+              <strong><%= statusCount.total %></strong>
               Projetos ao total
             </div>
             <div class="in-progress">
-              <strong>7</strong>
+              <strong><%= statusCount.progress %></strong>
               Em andamento
             </div>
             <div class="finished">
-              <strong>4</strong>
+              <strong><%= statusCount.done %></strong>
               Encerrados
             </div>
           </div>
@@ -108,9 +112,11 @@
                 title="Editar Job">
                 <img src="./images/edit-24.svg" alt="Editar Job" />
               </a>
-              <button class="delete button white" title="Excluir Job">
+              <form method="post" action="/job/delete/<%= job.id %>">
+              <button class="delete button white" title="Excluir Job" type="submit">
                 <img src="./images/trash-24.svg" alt="Excluir Job" />
               </button>
+            </form>
             </div>
           </div>
           <% }) %>
