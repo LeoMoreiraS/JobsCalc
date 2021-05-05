@@ -3,7 +3,7 @@ import { JobsServices } from "../services/JobsServices"
 import {Profile} from "../model/Profile"
 import {Jobs} from "../model/Job"
 const jobsService = new JobsServices();
-let profile = Profile.data;
+
 
 
 class JobsController{
@@ -12,22 +12,22 @@ class JobsController{
     showJobs(req:Request, res:Response){
        return res.render("pages/job");
     }
-    showJob(req:Request, res:Response){
-        let jobs = Jobs.getData();
+    async showJob(req:Request, res:Response){
+        let profile = await Profile.data();
+        let jobs = await Jobs.getData();
         let job:any = jobs.find(j => j.id==parseInt(req.params.id))
         if(!job){
             return res.redirect("/")
         }
 
-        job.budget = jobsService.calculateBudget(job,profile["value-hour"])
+        job.budget = jobsService.calculateBudget(job,profile["value-hour"]);
+        console.log(job.budget)
        return res.render("pages/job-edit",{"job":job})
 
     }
-    addJob(req:Request, res:Response){
-        let jobs = Jobs.getData();
-        const lastId = jobs[jobs.length-1]?.id || 0;
-        jobs.push({
-            id: lastId+1,
+    async addJob(req:Request, res:Response){
+        let jobs = await Jobs.getData();
+        Jobs.jobPush({
             name: req.body.name,
             "daily-hours": req.body["daily-hours"],
             "total-hours": req.body["total-hours"],
@@ -37,25 +37,21 @@ class JobsController{
        
         res.redirect("/");
     }
-    update(req:Request, res:Response){
-        let jobs = Jobs.getData();
+    async update(req:Request, res:Response){
+        let jobs = await Jobs.getData();
         let job:any = jobs.find(j => j.id==parseInt(req.params.id))
         if(!job){
             return res.redirect("/")
         }
         const data = req.body; 
         const updatedJob = {
-            ...job,
-            ...data,
+            name:data.name,
+            "total-hours":data["total-hours"],
+            "daily-hours":data["daily-hours"]
         }
-        const newJobs = jobs.map(job =>{
-            if(Number(job.id)===Number(req.params.id)){
-                job = updatedJob;
-            }
-            return job;
-        })
         
-        Jobs.update(newJobs);
+        
+        await Jobs.update(updatedJob,Number(req.params.id));
         res.redirect("/")
     }
     delete(req:Request, res:Response){

@@ -3,17 +3,18 @@ import {Request,Response} from "express";
 import {Jobs} from "../model/Job"
 import { JobsServices } from "../services/JobsServices"
 const jobsService = new JobsServices();
-let profile = Profile.data;
+
 
 class DashboardController {
-    index(req:Request,res:Response){
-        let jobs = Jobs.getData();
+    async index(req:Request,res:Response){
+        let jobs = await Jobs.getData();
+        console.log(jobs)
         let statusCount ={
             progress:0,
             total:jobs.length,
             done:0,
         }
-        
+        let profile = await Profile.data();
         let workingHours = 0;
         const updateJobs = jobs.map((job)=>{
             const remaining = jobsService.remainingDay(job);

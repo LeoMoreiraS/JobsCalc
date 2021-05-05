@@ -1,3 +1,4 @@
+const Database =require("../db/config");
 interface Data {
     nome:string;
     avatar:string;
@@ -6,30 +7,41 @@ interface Data {
     "hours-per-day":number;
     "vacation-per-year":number;
     "value-hour":number;
-    data;
-    update;
+
 }
 
-let Profile:Data ={
-    nome : "Leonardo",
-    avatar: "https://github.com/LeoMoreiraS.png",
-    "monthly-budget":3000,
-    "days-per-week":6,
-    "hours-per-day":8,
-    "vacation-per-year":1,
-    "value-hour": 20,
-    get data(){
-        return this;
+let Profile ={
+    async data(){
+        const db = await Database();
+
+        const dt = await db.get("SELECT * FROM profile");
+
+
+        let data:Data ={
+        nome : dt.name,
+        avatar : dt.avatar,
+        "monthly-budget":dt.monthly_budget,
+        "days-per-week":dt.days_per_week,
+        "hours-per-day":dt.hours_per_day,
+        "vacation-per-year":dt.vacation_per_week,
+        "value-hour":dt.value_hour
+        }
+        db.close();
+        return data;
     },
-    update(newProfile:Data){
-        this.nome = newProfile.nome;
-        this.avatar = newProfile.avatar;
-        this["monthly-budget"] = newProfile["monthly-budget"];
-        this["days-per-week"] = newProfile["days-per-week"];
-        this["hours-per-day"] = newProfile["hours-per-day"];
-        this["vacation-per-year"] = newProfile["vacation-per-year"];
-        this["value-hour"] = newProfile["value-hour"];
-         
+    async update(newProfile:Data){
+        const db = await Database();
+        db.run(`
+            UPDATE profile SET
+            name = '${newProfile.nome}',
+            avatar = '${newProfile.avatar}',
+            monthly_budget = ${newProfile["monthly-budget"]},
+            days_per_week = ${newProfile["days-per-week"]},
+            hours_per_day = ${newProfile["hours-per-day"]},
+            vacation_per_week = ${newProfile["vacation-per-year"]},
+            value_hour = ${newProfile["value-hour"]}
+        `)
+         db.close();
     }
 };
 

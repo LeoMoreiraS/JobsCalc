@@ -3,12 +3,12 @@ import {Profile} from "../model/Profile"
 
 
 class ProfileController{
-    index(req:Request, res:Response){
-
-        return res.render("pages/profile",{"profile":Profile.data});
+   async index(req:Request, res:Response){
+        const data = await Profile.data();
+        return res.render("pages/profile",{"profile":data});
     }
-    update(req:Request, res:Response){
-        let profile = Profile.data;
+    async update(req:Request, res:Response){
+        let profile = await Profile.data();
         const data = req.body;
         //media semanas mes com ferias
         const weeksPerMonth = (52- data["vacation-per-year"])/12
